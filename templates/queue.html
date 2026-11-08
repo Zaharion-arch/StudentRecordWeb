@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Queue - Student Record Management System</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="container">
+    <div class="card">
+
+        <h1>Registration Queue</h1>
+        <p>Manage pending student registrations using FIFO.</p>
+
+        {% with messages = get_flashed_messages() %}
+            {% for message in messages %}
+                <p class="message">{{ message }}</p>
+            {% endfor %}
+        {% endwith %}
+
+        <h2>Add Student to Queue</h2>
+
+        <form method="POST">
+            <label>Choose Student</label>
+
+            <select name="student_id" required>
+                <option value="">Select a student</option>
+
+                {% for student in students %}
+                <option value="{{ student.student_id }}">
+                    {{ student.student_id }} - {{ student.full_name }}
+                </option>
+                {% endfor %}
+
+            </select>
+
+            <button type="submit">Add to Queue</button>
+        </form>
+
+        <h2>Pending Registrations</h2>
+
+        <table>
+            <tr>
+                <th>Position</th>
+                <th>Student ID</th>
+                <th>Full Name</th>
+            </tr>
+
+            {% for student in registration_queue %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ student.student_id }}</td>
+                <td>{{ student.full_name }}</td>
+            </tr>
+
+            {% else %}
+            <tr>
+                <td colspan="3">The queue is empty.</td>
+            </tr>
+            {% endfor %}
+        </table>
+
+        <form method="POST" action="{{ url_for('process_queue') }}">
+            <button type="submit"
+                {% if not registration_queue %}disabled{% endif %}>
+                Process Next Registration
+            </button>
+        </form>
+
+        <a href="{{ url_for('home') }}">Back to Dashboard</a>
+
+    </div>
+</div>
+
+</body>
+</html>
